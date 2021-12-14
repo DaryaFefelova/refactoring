@@ -1,0 +1,32 @@
+from PIL import Image
+import numpy as np
+
+def image_pixel_art(img_open=r"C:\Users\HP\Pictures\img2.jpg", exit="res.jpg", block_size=10, gradation=6):
+    img = Image.open(img_open)
+    arr = np.array(img)
+    i = 0
+    while i < len(arr):
+        j = 0
+        while j < len(arr[1]):
+            bright = find_bright(arr, i, j, block_size)
+            for x in range(i, i+block_size):
+                for y in range(j, j+ block_size):
+                    arr[x][y][0] = int(bright // gradation) * gradation
+                    arr[x][y][1] = int(bright // gradation) * gradation
+                    arr[x][y][2] = int(bright // gradation) * gradation
+            j = j + block_size
+        i = i + block_size
+    result = Image.fromarray(arr)
+    result.save(exit)
+
+def find_bright(arr, i, j, size):
+    general_bright = 0
+    for x in range(i, i+size):
+        for y in range(j, j+size):
+            red = arr[x][y][0]
+            green = arr[x][y][1]
+            blue = arr[x][y][2]
+            average_bright = (int(red) + int(green) + int(blue)) / 3
+            general_bright += average_bright
+    general_bright = int(general_bright//(size * size))
+    return general_bright
